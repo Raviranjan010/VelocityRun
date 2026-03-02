@@ -2,583 +2,1211 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEON RUN</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Street Dash</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: #0a0a0f;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    overflow: hidden;
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    color: #fff;
-  }
-  #gameWrapper {
-    position: relative;
-    width: 480px;
-    height: 700px;
-  }
-  canvas {
-    display: block;
-    border-radius: 16px;
-    box-shadow: 0 0 60px rgba(99,102,241,0.4), 0 0 120px rgba(99,102,241,0.1);
-  }
-  .screen {
-    position: absolute;
-    inset: 0;
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
-    opacity: 0;
-  }
-  .screen.active { pointer-events: all; opacity: 1; }
-  .glass {
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px;
-    padding: 40px 50px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-  }
-  h1 {
-    font-size: 52px;
-    font-weight: 900;
-    letter-spacing: 4px;
-    background: linear-gradient(135deg, #818cf8, #c084fc, #38bdf8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 20px rgba(129,140,248,0.6));
-  }
-  h2 {
-    font-size: 28px;
-    font-weight: 800;
-    background: linear-gradient(135deg, #818cf8, #c084fc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .subtitle {
-    font-size: 13px;
-    color: rgba(255,255,255,0.4);
-    letter-spacing: 1px;
-    line-height: 1.9;
-  }
-  .score-display {
-    font-size: 42px;
-    font-weight: 900;
-    background: linear-gradient(135deg, #38bdf8, #818cf8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .hi-label { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 2px; }
-  .hi-score { font-size: 22px; font-weight: 700; color: #c084fc; }
-  button {
-    padding: 14px 44px;
-    border: none;
-    border-radius: 50px;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-    text-transform: uppercase;
-  }
-  .btn-primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: #fff;
-    box-shadow: 0 4px 30px rgba(99,102,241,0.5);
-  }
-  .btn-primary:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 8px 40px rgba(99,102,241,0.7); }
-  .btn-primary:active { transform: scale(0.97); }
-  .btn-secondary {
-    background: rgba(255,255,255,0.08);
-    color: rgba(255,255,255,0.7);
-    border: 1px solid rgba(255,255,255,0.15);
-  }
-  .btn-secondary:hover { background: rgba(255,255,255,0.14); color: #fff; transform: translateY(-2px); }
-  .btn-secondary:active { transform: scale(0.97); }
-  #hud {
-    position: absolute;
-    top: 16px;
-    left: 0; right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.4s;
-  }
-  #hud.active { opacity: 1; pointer-events: all; }
-  .hud-box {
-    background: rgba(0,0,0,0.45);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 8px 16px;
-    min-width: 88px;
-    text-align: center;
-  }
-  .hud-label { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 1px; }
-  .hud-value { font-size: 20px; font-weight: 800; color: #fff; }
-  #pauseBtn {
-    background: rgba(99,102,241,0.25);
-    border: 1px solid rgba(99,102,241,0.4);
-    border-radius: 10px;
-    padding: 8px 18px;
-    font-size: 18px;
-    cursor: pointer;
-    color: #fff;
-    pointer-events: all;
-    transition: background 0.2s;
-  }
-  #pauseBtn:hover { background: rgba(99,102,241,0.5); }
-  @media (max-width: 500px) {
-    #gameWrapper { width: 100vw; height: 100vh; }
-    canvas { border-radius: 0; width: 100% !important; height: 100% !important; }
-    .screen { border-radius: 0; }
-  }
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Bebas+Neue&display=swap');
+
+:root {
+  --orange: #f07d3c;
+  --orange2: #c05c20;
+  --ink: #1c1c2e;
+  --road-c: #525264;
+  --road-top: 54%;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: #2a2a3e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'Nunito', sans-serif;
+  overflow: hidden;
+}
+
+#wrap {
+  position: relative;
+  width: 460px;
+  height: 680px;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 30px 90px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.07);
+}
+
+canvas { display:block; }
+
+/* HUD */
+#hud {
+  position:absolute; top:0; left:0; right:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px 0;
+  pointer-events:none;
+  opacity:0; transition:opacity 0.3s;
+  z-index:20;
+}
+#hud.show { opacity:1; pointer-events:all; }
+.pill {
+  background:rgba(255,255,255,0.9);
+  border-radius:50px;
+  padding:5px 16px 6px;
+  display:flex; flex-direction:column; align-items:center;
+  box-shadow:0 3px 14px rgba(0,0,0,0.14);
+  min-width:80px;
+}
+.pill .lbl { font-size:9px; font-weight:800; letter-spacing:1.5px; color:#aaa; text-transform:uppercase; }
+.pill .val { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:1px; color:#1c1c2e; line-height:1.1; }
+#pauseBtn {
+  background:rgba(255,255,255,0.9);
+  border:none; border-radius:50%;
+  width:40px; height:40px;
+  font-size:15px; cursor:pointer;
+  box-shadow:0 3px 14px rgba(0,0,0,0.14);
+  display:flex; align-items:center; justify-content:center;
+  pointer-events:all;
+  transition:all 0.15s;
+}
+#pauseBtn:hover { background:#fff; transform:scale(1.1); }
+
+/* Screens */
+.screen {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.35s ease;
+}
+.screen.show { opacity:1; pointer-events:all; }
+
+/* Start screen */
+#startScreen {
+  background:linear-gradient(180deg, #c8ddf5 0%, #dceaf8 45%, #e4eeee 100%);
+}
+.ss-deco { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+.ss-sun {
+  position:absolute; top:24px; right:54px;
+  width:62px; height:62px;
+  background:radial-gradient(circle at 40% 40%, #ffe870 30%, #f5c840 65%, rgba(245,200,60,0) 100%);
+  border-radius:50%;
+  animation:sunpop 3.5s ease-in-out infinite;
+}
+@keyframes sunpop { 0%,100%{filter:drop-shadow(0 0 8px rgba(245,200,60,0.4));} 50%{filter:drop-shadow(0 0 22px rgba(245,200,60,0.7));} }
+.ss-cloud {
+  position:absolute; background:#fff;
+  border-radius:40px; opacity:0.82;
+  animation:cloudmove linear infinite;
+}
+@keyframes cloudmove { from{transform:translateX(-140px);} to{transform:translateX(580px);} }
+.ss-grass {
+  position:absolute; left:0; right:0; bottom:148px; height:52px;
+  background:linear-gradient(180deg,#78c878 0%,#5aaa5a 100%);
+}
+.ss-sidewalk {
+  position:absolute; left:0; right:0; bottom:110px; height:38px;
+  background:repeating-linear-gradient(90deg,#c8b89a 0,#c8b89a 36px,#b8a888 36px,#b8a888 38px);
+}
+.ss-road {
+  position:absolute; left:0; right:0; bottom:0; height:110px;
+  background:#4e4e62;
+}
+.ss-road-line {
+  position:absolute; top:50%; left:0; right:0; height:6px;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,0.7) 0,rgba(255,255,255,0.7) 38px,transparent 38px,transparent 76px);
+  animation:rlmove 0.4s linear infinite;
+}
+@keyframes rlmove { to{background-position:76px 0;} }
+.ss-rchar {
+  position:absolute; bottom:124px; left:50%; transform:translateX(-50%);
+  font-size:38px;
+  animation:runbounce 0.45s ease-in-out infinite alternate;
+}
+@keyframes runbounce { from{transform:translateX(-50%) translateY(0);} to{transform:translateX(-50%) translateY(-7px);} }
+
+/* Start card */
+.start-card {
+  position:relative; z-index:10;
+  background:rgba(255,255,255,0.93);
+  border-radius:22px;
+  padding:32px 38px 28px;
+  text-align:center;
+  max-width:320px; width:88%;
+  margin-top:-72px;
+  box-shadow:0 14px 50px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.9);
+  border:1.5px solid rgba(255,255,255,0.5);
+}
+.game-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:60px; letter-spacing:5px;
+  color:#1c1c2e; line-height:1;
+}
+.game-sub {
+  font-size:11px; font-weight:800;
+  letter-spacing:5px; color:var(--orange);
+  text-transform:uppercase; margin-bottom:16px;
+}
+.controls-box {
+  background:#f7f4ef;
+  border-radius:12px;
+  padding:11px 14px;
+  font-size:12px; color:#666; line-height:2;
+  margin-bottom:18px;
+}
+.controls-box strong { color:#1c1c2e; }
+
+/* Customize row */
+.cust-row { display:flex; gap:9px; margin-bottom:16px; }
+.cust-trigger {
+  flex:1; padding:10px 8px;
+  background:#faf8f5;
+  border:2px solid #ece8e0;
+  border-radius:12px;
+  font-family:'Nunito',sans-serif;
+  font-size:12px; font-weight:800;
+  color:#1c1c2e; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  transition:all 0.18s;
+}
+.cust-trigger:hover { border-color:var(--orange); background:#fff8f2; transform:translateY(-2px); }
+.cust-trigger .ico { font-size:20px; }
+
+/* Play button */
+.play-btn {
+  width:100%;
+  padding:15px;
+  background:var(--orange);
+  color:#fff;
+  border:none; border-radius:14px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:30px; letter-spacing:4px;
+  cursor:pointer;
+  box-shadow:0 6px 0 var(--orange2), 0 9px 24px rgba(240,125,60,0.28);
+  position:relative; top:0;
+  transition:all 0.15s;
+}
+.play-btn:hover { top:-2px; box-shadow:0 8px 0 var(--orange2), 0 12px 32px rgba(240,125,60,0.36); }
+.play-btn:active { top:4px; box-shadow:0 2px 0 var(--orange2); }
+
+/* Overlays */
+.overlay {
+  position:absolute; inset:0;
+  background:rgba(15,15,28,0.6);
+  backdrop-filter:blur(9px);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.3s;
+  z-index:40;
+}
+.overlay.show { opacity:1; pointer-events:all; }
+.modal {
+  background:#fff;
+  border-radius:22px;
+  padding:34px 38px 28px;
+  text-align:center;
+  max-width:290px; width:86%;
+  box-shadow:0 28px 70px rgba(0,0,0,0.28);
+  transform:scale(0.9);
+  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.overlay.show .modal { transform:scale(1); }
+.modal h2 {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:44px; letter-spacing:3px;
+  color:#1c1c2e; margin-bottom:6px;
+}
+.modal-score {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:72px; letter-spacing:2px;
+  color:var(--orange); line-height:1;
+}
+.modal-best { font-size:13px; font-weight:700; color:#aaa; margin-bottom:22px; }
+.modal-best b { color:#1c1c2e; font-size:17px; }
+.mbtn {
+  display:block; width:100%;
+  padding:14px; border:none; border-radius:12px;
+  font-family:'Nunito',sans-serif;
+  font-size:14px; font-weight:800;
+  letter-spacing:1px; text-transform:uppercase;
+  cursor:pointer;
+  transition:all 0.16s;
+  margin-bottom:9px;
+}
+.mbtn.prime {
+  background:var(--orange); color:#fff;
+  box-shadow:0 5px 0 var(--orange2);
+  position:relative; top:0;
+}
+.mbtn.prime:hover { top:-2px; box-shadow:0 7px 0 var(--orange2); }
+.mbtn.prime:active { top:3px; box-shadow:0 2px 0 var(--orange2); }
+.mbtn.sec { background:#f0ede8; color:#666; }
+.mbtn.sec:hover { background:#e8e4de; color:#1c1c2e; }
+
+/* Customize overlay */
+#custOverlay { z-index:50; }
+.cust-modal {
+  background:#fff;
+  border-radius:22px;
+  padding:26px 26px 20px;
+  max-width:360px; width:94%;
+  max-height:90vh; overflow-y:auto;
+  box-shadow:0 28px 70px rgba(0,0,0,0.3);
+  transform:scale(0.9);
+  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.overlay.show .cust-modal { transform:scale(1); }
+.cust-modal h3 {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:34px; letter-spacing:2px; color:#1c1c2e;
+  text-align:center; margin-bottom:20px;
+}
+.sect-lbl {
+  font-size:10px; font-weight:800;
+  letter-spacing:2px; color:#bbb;
+  text-transform:uppercase; margin-bottom:9px;
+}
+.sect { margin-bottom:18px; }
+
+/* Upload zone */
+.upload-zone {
+  border:2.5px dashed #e0dbd2;
+  border-radius:14px;
+  padding:18px;
+  text-align:center;
+  cursor:pointer;
+  background:#faf8f5;
+  transition:all 0.2s;
+}
+.upload-zone:hover { border-color:var(--orange); background:#fff8f2; }
+.upload-zone img.prev {
+  width:56px; height:56px;
+  border-radius:50%; object-fit:cover;
+  margin:0 auto 8px; display:none;
+  border:3px solid var(--orange);
+}
+.upload-zone img.prev.show { display:block; }
+.upload-zone .up-ico { font-size:26px; margin-bottom:5px; }
+.upload-zone p { font-size:12px; color:#aaa; font-weight:600; }
+input[type=file] { display:none; }
+
+/* Emoji grid */
+.emoji-grid {
+  display:grid; grid-template-columns:repeat(6,1fr); gap:7px;
+}
+.eg-opt {
+  aspect-ratio:1; background:#f5f2ee;
+  border-radius:10px; border:2.5px solid transparent;
+  font-size:19px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.15s;
+}
+.eg-opt:hover { background:#fff0e4; border-color:#f0b070; transform:scale(1.08); }
+.eg-opt.on { border-color:var(--orange); background:#fff5ee; }
+
+.emoji-custom-row {
+  display:flex; gap:8px; margin-top:10px;
+}
+.emoji-custom-row input {
+  flex:1; padding:8px 12px;
+  border:2px solid #e4dfd6;
+  border-radius:10px; font-size:15px;
+  font-family:'Nunito',sans-serif; outline:none;
+  transition:border 0.18s;
+}
+.emoji-custom-row input:focus { border-color:var(--orange); }
+.emoji-custom-row button {
+  padding:8px 14px;
+  background:var(--orange); color:#fff;
+  border:none; border-radius:10px;
+  font-weight:800; font-size:12px; cursor:pointer;
+  transition:all 0.15s; white-space:nowrap;
+}
+.emoji-custom-row button:hover { background:#e06828; }
+
+.obs-upload-row {
+  display:flex; align-items:center; gap:10px;
+  margin-top:10px; padding:10px 14px;
+  border:2px dashed #e0dbd2;
+  border-radius:12px; cursor:pointer;
+  background:#faf8f5;
+  transition:all 0.2s;
+}
+.obs-upload-row:hover { border-color:var(--orange); background:#fff8f2; }
+.obs-upload-row img.oprev {
+  width:38px; height:38px;
+  border-radius:7px; object-fit:cover;
+  display:none; border:2px solid var(--orange);
+}
+.obs-upload-row img.oprev.show { display:block; }
+.obs-upload-row .olbl { font-size:11px; color:#aaa; font-weight:600; flex:1; }
+
+.done-btn {
+  display:block; width:100%;
+  padding:13px; background:#1c1c2e; color:#fff;
+  border:none; border-radius:12px;
+  font-family:'Nunito',sans-serif;
+  font-size:14px; font-weight:800;
+  letter-spacing:1px; text-transform:uppercase;
+  cursor:pointer; margin-top:4px;
+  transition:background 0.15s;
+}
+.done-btn:hover { background:#2d2d50; }
+
+/* Speed flash */
+#spFlash {
+  position:absolute; inset:0; border-radius:22px;
+  pointer-events:none; opacity:0;
+  background:rgba(240,180,60,0.18);
+  transition:opacity 0.25s;
+}
 </style>
 </head>
 <body>
-<div id="gameWrapper">
-  <canvas id="gameCanvas" width="480" height="700"></canvas>
+<div id="wrap">
+  <canvas id="c" width="460" height="680"></canvas>
+  <div id="spFlash"></div>
+
+  <!-- HUD -->
   <div id="hud">
-    <div class="hud-box">
-      <div class="hud-label">SCORE</div>
-      <div class="hud-value" id="scoreDisplay">0</div>
+    <div class="pill">
+      <span class="lbl">Score</span>
+      <span class="val" id="scoreVal">0</span>
     </div>
     <button id="pauseBtn">⏸</button>
-    <div class="hud-box">
-      <div class="hud-label">BEST</div>
-      <div class="hud-value" id="hiDisplay">0</div>
+    <div class="pill">
+      <span class="lbl">Best</span>
+      <span class="val" id="bestVal">0</span>
     </div>
   </div>
-  <div class="screen active" id="startScreen">
-    <div class="glass">
-      <h1>NEON RUN</h1>
-      <p class="subtitle">← → / A D &nbsp; change lane<br>↑ / W &nbsp; jump &nbsp;&nbsp; ↓ / S &nbsp; slide<br>Swipe left/right/up/down on mobile</p>
-      <button class="btn-primary" id="playBtn">▶ &nbsp; PLAY</button>
+
+  <!-- Start Screen -->
+  <div class="screen show" id="startScreen">
+    <div class="ss-deco">
+      <div class="ss-sun"></div>
+      <div class="ss-cloud" style="top:44px;height:20px;width:88px;animation-delay:-4s;animation-duration:22s;"></div>
+      <div class="ss-cloud" style="top:28px;height:14px;width:58px;animation-delay:-13s;animation-duration:30s;opacity:0.65;"></div>
+      <div class="ss-cloud" style="top:62px;height:17px;width:70px;animation-delay:-20s;animation-duration:26s;"></div>
+      <div class="ss-grass"></div>
+      <div class="ss-sidewalk"></div>
+      <div class="ss-road"><div class="ss-road-line"></div></div>
+      <div class="ss-rchar" id="startChar">🏃</div>
     </div>
-  </div>
-  <div class="screen" id="pauseScreen">
-    <div class="glass">
-      <h2>PAUSED</h2>
-      <button class="btn-primary" id="resumeBtn">RESUME</button>
-      <button class="btn-secondary" id="restartFromPause">RESTART</button>
-    </div>
-  </div>
-  <div class="screen" id="overScreen">
-    <div class="glass">
-      <h2>GAME OVER</h2>
-      <div class="score-display" id="finalScore">0</div>
-      <div>
-        <div class="hi-label">BEST</div>
-        <div class="hi-score" id="finalHi">0</div>
+    <div class="start-card">
+      <div class="game-title">Street Dash</div>
+      <div class="game-sub">Endless Runner</div>
+      <div class="controls-box">
+        <strong>← → / A D</strong> &nbsp;Switch lane<br>
+        <strong>↑ / W</strong> &nbsp;Jump &nbsp;·&nbsp; <strong>↓ / S</strong> &nbsp;Slide<br>
+        <strong>Swipe</strong> on mobile
       </div>
-      <button class="btn-primary" id="restartBtn">PLAY AGAIN</button>
+      <div class="cust-row">
+        <button class="cust-trigger" id="openCust">
+          <span class="ico">🎨</span>Customize
+        </button>
+      </div>
+      <button class="play-btn" id="playBtn">Let's Go!</button>
+    </div>
+  </div>
+
+  <!-- Pause Overlay -->
+  <div class="overlay" id="pauseOverlay">
+    <div class="modal">
+      <h2>Paused</h2>
+      <button class="mbtn prime" id="resumeBtn">Resume</button>
+      <button class="mbtn sec" id="restartFromPause">Restart</button>
+    </div>
+  </div>
+
+  <!-- Game Over Overlay -->
+  <div class="overlay" id="overOverlay">
+    <div class="modal">
+      <h2>Game Over!</h2>
+      <div class="modal-score" id="finalScore">0</div>
+      <div class="modal-best">Personal best: <b id="finalBest">0</b></div>
+      <button class="mbtn prime" id="restartBtn">Play Again</button>
+      <button class="mbtn sec" id="menuBtn">Main Menu</button>
+    </div>
+  </div>
+
+  <!-- Customize Overlay -->
+  <div class="overlay" id="custOverlay">
+    <div class="cust-modal">
+      <h3>🎨 Customize</h3>
+
+      <div class="sect">
+        <div class="sect-lbl">Your Character</div>
+        <div class="upload-zone" id="playerZone">
+          <img class="prev" id="playerPrev" src="" alt="">
+          <div class="up-ico" id="upIco">📷</div>
+          <p id="upTxt">Tap to upload your photo</p>
+        </div>
+        <input type="file" id="playerFile" accept="image/*">
+      </div>
+
+      <div class="sect">
+        <div class="sect-lbl">Obstacle Style</div>
+        <div class="emoji-grid" id="emojiGrid">
+          <div class="eg-opt on" data-e="🚧">🚧</div>
+          <div class="eg-opt" data-e="🪨">🪨</div>
+          <div class="eg-opt" data-e="🌵">🌵</div>
+          <div class="eg-opt" data-e="🦕">🦕</div>
+          <div class="eg-opt" data-e="🚗">🚗</div>
+          <div class="eg-opt" data-e="🐊">🐊</div>
+          <div class="eg-opt" data-e="🔥">🔥</div>
+          <div class="eg-opt" data-e="💣">💣</div>
+          <div class="eg-opt" data-e="🧱">🧱</div>
+          <div class="eg-opt" data-e="🏗️">🏗️</div>
+          <div class="eg-opt" data-e="⚡">⚡</div>
+          <div class="eg-opt" data-e="🦖">🦖</div>
+        </div>
+        <div class="emoji-custom-row">
+          <input type="text" id="custEmoIn" placeholder="Paste any emoji…" maxlength="6">
+          <button id="addEmoBtn">Use It</button>
+        </div>
+        <div class="obs-upload-row" id="obsZone">
+          <img class="oprev" id="obsPrev" src="" alt="">
+          <span class="olbl" id="obsLbl">📁 Or upload an obstacle image</span>
+        </div>
+        <input type="file" id="obsFile" accept="image/*">
+      </div>
+
+      <button class="done-btn" id="closeCust">Done ✓</button>
     </div>
   </div>
 </div>
 
 <script>
-const canvas = document.getElementById('gameCanvas');
+// =============================================
+// STREET DASH — Game Engine
+// =============================================
+const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
-const W = canvas.width, H = canvas.height;
+const CW = canvas.width, CH = canvas.height;
 
-// Screens
-const startScreen = document.getElementById('startScreen');
-const pauseScreen = document.getElementById('pauseScreen');
-const overScreen  = document.getElementById('overScreen');
-const hud         = document.getElementById('hud');
+// Road & world geometry
+const ROAD_LEFT  = CW * 0.28;
+const ROAD_RIGHT = CW * 0.72;
+const ROAD_W     = ROAD_RIGHT - ROAD_LEFT;
+const ROAD_TOP_Y = CH * 0.52;
+const GROUND_Y   = CH - 108; // where feet land
 
-function showScreen(name) {
-  [startScreen, pauseScreen, overScreen].forEach(s => s.classList.remove('active'));
-  hud.classList.remove('active');
-  if (name === 'start') startScreen.classList.add('active');
-  else if (name === 'pause') pauseScreen.classList.add('active');
-  else if (name === 'over') overScreen.classList.add('active');
-  else if (name === 'game') hud.classList.add('active');
-}
+// Lanes (x centers)
+const LANE_X = [ROAD_LEFT + ROAD_W*0.17, ROAD_LEFT + ROAD_W*0.5, ROAD_LEFT + ROAD_W*0.83];
 
-// Lanes
-const LANES = [W/2 - 110, W/2, W/2 + 110];
-
-// Game vars
+// Game state
 let state = 'start';
 let score = 0;
-let hiScore = parseInt(localStorage.getItem('neonrun_hi') || '0');
-let speed = 4, gameTime = 0;
-let particles = [], obstacles = [];
-let spawnTimer = 0;
-let bgOffset = 0;
+let hiScore = parseInt(localStorage.getItem('sd_hi') || '0');
+let gameTime = 0, speed = 3.8;
+let particles = [], obstacles = [], floatTexts = [];
+let spawnTimer = 0, dashOff = 0;
+let lastSpeedLv = 0, lastTs = 0;
 
-// =====================
-// Player
-// =====================
+// Customization
+let playerImg = null;
+let obsEmoji   = '🚧';
+let obsImg     = null;
+
+// Pre-render emoji onto offscreen canvas for speed
+let emojiCanvas = null, emojiCtx = null;
+
+function makeEmojiCanvas(e, sz) {
+  const c = document.createElement('canvas');
+  c.width = c.height = sz;
+  const x = c.getContext('2d');
+  x.font = `${sz*0.78}px serif`;
+  x.textAlign = 'center';
+  x.textBaseline = 'middle';
+  x.fillText(e, sz/2, sz/2);
+  return c;
+}
+
+function refreshEmoji() {
+  if (!obsImg) {
+    emojiCanvas = makeEmojiCanvas(obsEmoji, 80);
+  }
+}
+refreshEmoji();
+
+// =============================================
+// BUILDINGS (city background)
+// =============================================
+const BLDG_PALETTE = ['#bccedd','#c8d8e0','#d0c8bc','#c4cfbc','#ccc8be','#b8c4d0'];
+let bldgs = [];
+function initBldgs() {
+  bldgs = [];
+  // Left side buildings
+  for (let i = 0; i < 6; i++) {
+    bldgs.push({
+      side: 'L',
+      x: 8 + i * 38 + Math.random()*10,
+      bw: 28 + Math.random()*22,
+      bh: 55 + Math.random()*130,
+      color: BLDG_PALETTE[i % BLDG_PALETTE.length],
+      wx: 2 + Math.floor(Math.random()*3),
+      wy: 2 + Math.floor(Math.random()*5)
+    });
+  }
+  // Right side buildings
+  for (let i = 0; i < 6; i++) {
+    bldgs.push({
+      side: 'R',
+      x: CW - 10 - i*38 - Math.random()*10,
+      bw: 28 + Math.random()*22,
+      bh: 55 + Math.random()*130,
+      color: BLDG_PALETTE[(i+3) % BLDG_PALETTE.length],
+      wx: 2 + Math.floor(Math.random()*3),
+      wy: 2 + Math.floor(Math.random()*5)
+    });
+  }
+}
+initBldgs();
+
+function drawBldg(b) {
+  const bx = b.side === 'L' ? b.x : b.x;
+  const by = ROAD_TOP_Y - 14;
+  ctx.fillStyle = b.color;
+  ctx.fillRect(bx - b.bw/2, by - b.bh, b.bw, b.bh);
+  // Roof ledge
+  ctx.fillStyle = lighten(b.color, -18);
+  ctx.fillRect(bx - b.bw/2 - 2, by - b.bh - 3, b.bw + 4, 5);
+  // Windows
+  const wW = (b.bw - 8) / b.wx;
+  const wH = 10;
+  for (let wy = 0; wy < b.wy; wy++) {
+    for (let wx = 0; wx < b.wx; wx++) {
+      const lit = Math.random() > 0.35;
+      ctx.fillStyle = lit ? 'rgba(255,240,170,0.65)' : 'rgba(100,120,150,0.3)';
+      ctx.fillRect(bx - b.bw/2 + 4 + wx*wW, by - b.bh + 10 + wy*18, wW - 3, wH);
+    }
+  }
+}
+
+function lighten(hex, amt) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgb(${clamp(r+amt)},${clamp(g+amt)},${clamp(b+amt)})`;
+}
+function clamp(v) { return Math.max(0, Math.min(255, v)); }
+
+// =============================================
+// CLOUDS
+// =============================================
+const clouds = [
+  {x:80, y:36, w:95, h:24, s:0.2},
+  {x:260, y:22, w:65, h:18, s:0.14},
+  {x:400, y:48, w:78, h:20, s:0.17},
+  {x:140, y:58, w:50, h:14, s:0.1},
+];
+
+function drawCloud(cx, cy, cw, ch) {
+  ctx.fillStyle = 'rgba(255,255,255,0.84)';
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, cw/2, ch/2, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(cx - cw*0.23, cy + ch*0.08, cw*0.3, ch*0.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(cx + cw*0.24, cy + ch*0.08, cw*0.32, ch*0.48, 0, 0, Math.PI*2); ctx.fill();
+}
+
+// =============================================
+// DRAW BACKGROUND
+// =============================================
+function drawBG(dt) {
+  // Sky
+  const sky = ctx.createLinearGradient(0, 0, 0, ROAD_TOP_Y);
+  sky.addColorStop(0, '#b8cfe8');
+  sky.addColorStop(0.7, '#d0e4f5');
+  sky.addColorStop(1, '#e4eef8');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, CW, ROAD_TOP_Y);
+
+  // Sun
+  ctx.save();
+  ctx.fillStyle = '#ffe870';
+  ctx.shadowColor = '#f5c840';
+  ctx.shadowBlur = 28;
+  ctx.beginPath();
+  ctx.arc(CW - 58, 38, 26, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+
+  // Clouds (move slowly)
+  clouds.forEach(c => {
+    if (state === 'game') { c.x -= c.s * dt * 60; if (c.x + c.w < -20) c.x = CW + c.w; }
+    drawCloud(c.x, c.y, c.w, c.h);
+  });
+
+  // Buildings
+  bldgs.forEach(b => drawBldg(b));
+
+  // Horizon haze
+  const hz = ctx.createLinearGradient(0, ROAD_TOP_Y - 30, 0, ROAD_TOP_Y + 20);
+  hz.addColorStop(0, 'rgba(200,220,240,0)');
+  hz.addColorStop(1, 'rgba(160,190,215,0.22)');
+  ctx.fillStyle = hz;
+  ctx.fillRect(0, ROAD_TOP_Y-30, CW, 50);
+
+  // Grass strips
+  ctx.fillStyle = '#78c878';
+  ctx.fillRect(0, ROAD_TOP_Y, ROAD_LEFT, CH - ROAD_TOP_Y);
+  ctx.fillRect(ROAD_RIGHT, ROAD_TOP_Y, CW - ROAD_RIGHT, CH - ROAD_TOP_Y);
+  // Grass stripe texture
+  ctx.fillStyle = '#68b868';
+  for (let x = 0; x < ROAD_LEFT; x += 14) ctx.fillRect(x, ROAD_TOP_Y, 7, CH - ROAD_TOP_Y);
+  for (let x = ROAD_RIGHT; x < CW; x += 14) ctx.fillRect(x, ROAD_TOP_Y, 7, CH - ROAD_TOP_Y);
+
+  // Sidewalks
+  ctx.fillStyle = '#c8b89a';
+  ctx.fillRect(ROAD_LEFT - 28, ROAD_TOP_Y, 28, CH - ROAD_TOP_Y);
+  ctx.fillRect(ROAD_RIGHT, ROAD_TOP_Y, 28, CH - ROAD_TOP_Y);
+  // Sidewalk tiles
+  ctx.fillStyle = '#b5a28a';
+  if (state === 'game') dashOff -= speed * dt * 60 * 0.5;
+  if (dashOff < -38) dashOff += 38;
+  for (let ty = ROAD_TOP_Y + dashOff; ty < CH; ty += 38) {
+    ctx.fillRect(ROAD_LEFT-28, ty, 28, 1.5);
+    ctx.fillRect(ROAD_RIGHT, ty, 28, 1.5);
+  }
+
+  // Road surface
+  const road = ctx.createLinearGradient(ROAD_LEFT, 0, ROAD_RIGHT, 0);
+  road.addColorStop(0, '#565668');
+  road.addColorStop(0.5, '#525264');
+  road.addColorStop(1, '#4c4c60');
+  ctx.fillStyle = road;
+  ctx.fillRect(ROAD_LEFT, ROAD_TOP_Y, ROAD_W, CH - ROAD_TOP_Y);
+
+  // Road edge white lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+  ctx.lineWidth = 3;
+  ctx.setLineDash([30, 20]);
+  ctx.lineDashOffset = dashOff * 2.2;
+  [ROAD_LEFT, ROAD_RIGHT].forEach(lx => {
+    ctx.beginPath(); ctx.moveTo(lx, ROAD_TOP_Y); ctx.lineTo(lx, CH); ctx.stroke();
+  });
+
+  // Lane center dashes
+  ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([26,22]);
+  [ROAD_LEFT + ROAD_W/3, ROAD_LEFT + ROAD_W*2/3].forEach(lx => {
+    ctx.beginPath(); ctx.moveTo(lx, ROAD_TOP_Y); ctx.lineTo(lx, CH); ctx.stroke();
+  });
+  ctx.setLineDash([]); ctx.lineDashOffset = 0;
+
+  // Road surface sheen
+  const sh = ctx.createLinearGradient(ROAD_LEFT, 0, ROAD_RIGHT, 0);
+  sh.addColorStop(0, 'rgba(255,255,255,0.03)');
+  sh.addColorStop(0.5, 'rgba(255,255,255,0.07)');
+  sh.addColorStop(1, 'rgba(255,255,255,0.03)');
+  ctx.fillStyle = sh;
+  ctx.fillRect(ROAD_LEFT, ROAD_TOP_Y, ROAD_W, CH-ROAD_TOP_Y);
+}
+
+// =============================================
+// PLAYER
+// =============================================
 class Player {
-  constructor() { this.reset(); }
-  reset() {
-    this.lane = 1;
-    this.targetLane = 1;
-    this.x = LANES[1];
-    this.baseY = H - 160;
+  constructor() { this.init(); }
+  init() {
+    this.lane = 1; this.tLane = 1;
+    this.x = LANE_X[1];
+    this.baseY = GROUND_Y - 52;
     this.y = this.baseY;
     this.vy = 0;
+    this.w = 40; this.h = 52;
     this.jumping = false;
     this.sliding = false;
-    this.slideTimer = 0;
-    this.w = 36; this.h = 56;
+    this.slideT = 0;
     this.dead = false;
-    this.deathTimer = 0;
+    this.deathT = 0;
+    this.legPhase = 0;
+    this.bobPhase = 0;
   }
-  get hitbox() {
-    if (this.sliding) {
-      return { x: this.x - this.w/2, y: this.baseY + this.h * 0.5, w: this.w, h: this.h * 0.5 };
-    }
-    return { x: this.x - this.w/2, y: this.y, w: this.w, h: this.h };
+  get hb() {
+    const px = 7;
+    if (this.sliding) return { x:this.x - this.w/2+px, y:this.baseY+2, w:this.w-px*2, h:22 };
+    return { x:this.x - this.w/2+px, y:this.y+4, w:this.w-px*2, h:this.h-8 };
   }
-  moveLeft()  { if (this.lane > 0) this.targetLane = this.lane - 1; }
-  moveRight() { if (this.lane < 2) this.targetLane = this.lane + 1; }
-  jump() {
-    if (!this.jumping && !this.sliding) {
-      this.jumping = true;
-      this.vy = -16;
-    }
-  }
-  slide() {
-    if (!this.jumping) {
-      this.sliding = true;
-      this.slideTimer = 55;
-    }
-  }
+  moveLeft()  { if (this.lane > 0) this.tLane = this.lane - 1; }
+  moveRight() { if (this.lane < 2) this.tLane = this.lane + 1; }
+  jump()  { if (!this.jumping && !this.sliding) { this.jumping=true; this.vy=-15.5; } }
+  slide() { if (!this.jumping) { this.sliding=true; this.slideT=55; } }
   update(dt) {
-    if (this.dead) { this.deathTimer += dt * 60; return; }
-    // Lerp to target lane
-    const tx = LANES[this.targetLane];
+    if (this.dead) { this.deathT += dt*60; return; }
+    // Lane lerp
+    const tx = LANE_X[this.tLane];
     this.x += (tx - this.x) * 0.18 * dt * 60;
-    if (Math.abs(this.x - tx) < 1) { this.x = tx; this.lane = this.targetLane; }
+    if (Math.abs(this.x - tx) < 0.8) { this.x = tx; this.lane = this.tLane; }
     // Jump
     if (this.jumping) {
-      this.vy += 0.72 * dt * 60;
+      this.vy += 0.68 * dt * 60;
       this.y += this.vy * dt * 60;
-      if (this.y >= this.baseY) { this.y = this.baseY; this.jumping = false; this.vy = 0; }
+      if (this.y >= this.baseY) { this.y=this.baseY; this.jumping=false; this.vy=0; }
     }
     // Slide
-    if (this.sliding) {
-      this.slideTimer -= dt * 60;
-      if (this.slideTimer <= 0) this.sliding = false;
-    }
+    if (this.sliding) { this.slideT -= dt*60; if (this.slideT<=0) this.sliding=false; }
+    this.legPhase += dt * speed * 5;
+    this.bobPhase += dt * speed * 3;
   }
   draw() {
-    const { x, y, w, h, sliding, dead, deathTimer } = this;
-    const ph = sliding ? h * 0.5 : h;
-    const py = sliding ? this.baseY + h * 0.5 : y;
+    const {x, y, w, h, sliding, dead, deathT, jumping, legPhase, bobPhase, baseY} = this;
+    const ph = sliding ? h*0.45 : h;
+    const py = sliding ? baseY-2 : y;
+    const bobY = (!sliding && !jumping) ? Math.sin(bobPhase)*2 : 0;
+
     ctx.save();
     if (dead) {
-      ctx.globalAlpha = Math.max(0, 1 - deathTimer / 25);
-      ctx.translate(x, py + ph / 2);
-      ctx.rotate(deathTimer * 0.12);
-      ctx.translate(-x, -(py + ph / 2));
+      ctx.globalAlpha = Math.max(0, 1 - deathT/20);
+      ctx.translate(x, py+ph/2);
+      ctx.rotate(deathT*0.14);
+      ctx.translate(-x, -(py+ph/2));
     }
-    // Shadow
+
+    // Ground shadow
     ctx.save();
-    ctx.globalAlpha = (ctx.globalAlpha || 1) * 0.2;
+    ctx.globalAlpha = (dead ? ctx.globalAlpha : 1) * 0.2;
     ctx.fillStyle = '#000';
+    const shScale = jumping ? Math.max(0.25, 1-(baseY-y)/190) : 1;
     ctx.beginPath();
-    ctx.ellipse(x, this.baseY + ph + 2, w * 0.55, 7, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, GROUND_Y+5, (w*0.5)*shScale, 5*shScale, 0, 0, Math.PI*2);
     ctx.fill();
     ctx.restore();
-    // Body
-    const grad = ctx.createLinearGradient(x - w/2, py, x + w/2, py + ph);
-    grad.addColorStop(0, '#818cf8');
-    grad.addColorStop(1, '#c084fc');
-    ctx.fillStyle = grad;
-    ctx.shadowColor = '#818cf8';
-    ctx.shadowBlur = 18;
-    ctx.beginPath();
-    ctx.roundRect(x - w/2, py, w, ph, 9);
-    ctx.fill();
-    // Eyes (only if not slid too small)
-    if (ph > 25) {
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(x - 10, py + 7, 7, 7);
-      ctx.fillRect(x + 3, py + 7, 7, 7);
-      ctx.fillStyle = '#1e1b4b';
-      ctx.fillRect(x - 8, py + 9, 4, 4);
-      ctx.fillRect(x + 5, py + 9, 4, 4);
+
+    if (playerImg) {
+      // Custom uploaded image, drawn as circle
+      const r = ph/2 + 1;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x, py+bobY+ph/2, r, 0, Math.PI*2);
+      ctx.clip();
+      ctx.drawImage(playerImg, x-r, py+bobY+ph/2-r, r*2, r*2);
+      ctx.restore();
+      ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(x, py+bobY+ph/2, r, 0, Math.PI*2);
+      ctx.stroke();
+    } else {
+      drawStickRunner(ctx, x, py+bobY, w, ph, sliding, legPhase);
     }
     ctx.restore();
   }
 }
 
-// =====================
-// Obstacle
-// =====================
+function drawStickRunner(ctx, x, py, w, ph, sliding, legPhase) {
+  const headR = ph * 0.17;
+  const bodyTop = py + headR*2.4;
+  const bodyH = ph * (sliding ? 0.38 : 0.42);
+
+  if (!sliding) {
+    const swing = Math.sin(legPhase) * 9;
+    // Pants/legs
+    ctx.fillStyle = '#3a3a55';
+    ctx.beginPath(); ctx.roundRect(x-10, bodyTop+bodyH-2, 9, 15, 3); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(x+1, bodyTop+bodyH-2, 9, 15, 3); ctx.fill();
+    // Shoes
+    ctx.fillStyle = '#e05050';
+    ctx.beginPath(); ctx.roundRect(x-13+swing, bodyTop+bodyH+11, 14, 7, 3); ctx.fill();
+    ctx.fillStyle = '#e05050';
+    ctx.beginPath(); ctx.roundRect(x-1-swing, bodyTop+bodyH+11, 14, 7, 3); ctx.fill();
+  }
+
+  // Body (t-shirt)
+  const bgrad = ctx.createLinearGradient(x-w/2+3, bodyTop, x+w/2-3, bodyTop+bodyH);
+  bgrad.addColorStop(0, '#f08040');
+  bgrad.addColorStop(1, '#d06030');
+  ctx.fillStyle = bgrad;
+  ctx.beginPath();
+  ctx.roundRect(x-w/2+3, bodyTop, w-6, bodyH+(sliding?10:0), 7);
+  ctx.fill();
+  // Shirt stripe
+  ctx.fillStyle = 'rgba(255,255,255,0.22)';
+  ctx.beginPath(); ctx.roundRect(x-5, bodyTop+5, 10, 8, 3); ctx.fill();
+
+  if (!sliding) {
+    // Arms
+    const aSwing = Math.sin(legPhase + Math.PI)*11;
+    ctx.strokeStyle = '#d07030';
+    ctx.lineWidth = 6; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x-w/2+5, bodyTop+5); ctx.lineTo(x-w/2-4, bodyTop+18+aSwing); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x+w/2-5, bodyTop+5); ctx.lineTo(x+w/2+4, bodyTop+18-aSwing); ctx.stroke();
+  }
+
+  // Head
+  ctx.fillStyle = '#f5c090';
+  ctx.beginPath(); ctx.arc(x, py+headR, headR, 0, Math.PI*2); ctx.fill();
+  // Hair
+  ctx.fillStyle = '#3b2a18';
+  ctx.beginPath(); ctx.ellipse(x, py+headR*0.38, headR+1.5, headR*0.62, 0, Math.PI, 0); ctx.fill();
+  // Eyes
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(x-5, py+headR*0.88, 3.2, 3.8, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x+5, py+headR*0.88, 3.2, 3.8, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#1c1c2e';
+  ctx.beginPath(); ctx.arc(x-4.5, py+headR*0.94, 1.9, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x+5.5, py+headR*0.94, 1.9, 0, Math.PI*2); ctx.fill();
+  // Smile
+  ctx.strokeStyle = '#a05828';
+  ctx.lineWidth = 1.5; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(x, py+headR*1.18, 3.8, 0.25, Math.PI-0.25); ctx.stroke();
+}
+
+// =============================================
+// OBSTACLE
+// =============================================
 class Obstacle {
-  constructor(laneIdx, type) {
-    this.lane = laneIdx;
-    this.x = LANES[laneIdx];
-    this.y = -80;
+  constructor(lane, type) {
+    this.lane = lane;
+    this.x = LANE_X[lane];
+    this.y = ROAD_TOP_Y - 90;
     this.type = type;
-    if (type === 'normal') { this.w = 40; this.h = 50; this.color = '#f87171'; this.yOff = 0; }
-    else if (type === 'low') { this.w = 72; this.h = 22; this.color = '#fb923c'; this.yOff = 0; }
-    else { this.w = 46; this.h = 26; this.color = '#facc15'; this.yOff = 28; } // high - slide under
+    if (type==='normal') { this.w=46; this.h=56; this.yOff=0; }
+    else if (type==='low')  { this.w=64; this.h=28; this.yOff=0; }
+    else                    { this.w=52; this.h=26; this.yOff=28; }
+    this.pulse = Math.random()*Math.PI*2;
+    this.sc = 0.05;
   }
-  get hitbox() {
-    return { x: this.x - this.w/2, y: this.y + this.yOff, w: this.w, h: this.h };
+  get hb() {
+    const pd = 5;
+    return { x:this.x-this.w/2+pd, y:this.y+this.yOff+4, w:this.w-pd*2, h:this.h-8 };
   }
-  update(spd, dt) { this.y += spd * dt * 60; }
+  update(spd, dt) {
+    this.y += spd * dt * 60;
+    this.pulse += dt * 2.8;
+    this.sc = Math.min(1, this.sc + dt*7);
+  }
   draw() {
-    const { x, y, w, h, color, type, yOff } = this;
+    const {x, y, w, h, type, yOff, sc, pulse} = this;
+    const cy = y + yOff + h/2;
+    const sz = Math.min(w,h) * sc;
+
     ctx.save();
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 22;
-    const g = ctx.createLinearGradient(x, y + yOff, x, y + yOff + h);
-    g.addColorStop(0, color);
-    g.addColorStop(1, shadeColor(color, -50));
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.roundRect(x - w/2, y + yOff, w, h, 7);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = 'rgba(0,0,0,0.55)';
-    ctx.font = 'bold 9px system-ui';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    if (type === 'low') ctx.fillText('JUMP', x, y + yOff + h/2);
-    else if (type === 'high') ctx.fillText('SLIDE', x, y + yOff + h/2);
+    ctx.translate(x, cy);
+    ctx.scale(sc, sc);
+
+    if (obsImg) {
+      ctx.drawImage(obsImg, -w/2+2, -h/2+2, w-4, h-4);
+    } else {
+      // Background bubble
+      const bubbleColors = {
+        normal: { fill:'#fff0ee', stroke:'#f5b0a8' },
+        low:    { fill:'#fff8ec', stroke:'#f5d090' },
+        high:   { fill:'#ecf4ff', stroke:'#a0c8f5' }
+      };
+      const bc = bubbleColors[type];
+      ctx.fillStyle = bc.fill;
+      ctx.strokeStyle = bc.stroke;
+      ctx.lineWidth = 2.5 / sc;
+      ctx.beginPath();
+      ctx.roundRect(-w/2+2, -h/2+2, w-4, h-4, 10);
+      ctx.fill(); ctx.stroke();
+
+      // Bottom shadow
+      ctx.globalAlpha = 0.1;
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      ctx.ellipse(0, h/2-6, w/2-4, 6, 0, 0, Math.PI*2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // Emoji
+      const pulseSz = sz * 0.88 + Math.sin(pulse)*1.5;
+      if (emojiCanvas) {
+        const esz = Math.max(20, pulseSz * 1.05);
+        ctx.drawImage(emojiCanvas, -esz/2, -esz/2, esz, esz);
+      } else {
+        ctx.font = `${Math.max(18,pulseSz*0.8)}px serif`;
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(obsEmoji, 0, 0);
+      }
+
+      // Hint arrow
+      if (type==='low' || type==='high') {
+        ctx.fillStyle = type==='low' ? '#e07030' : '#4090d0';
+        ctx.font = `bold ${10/sc}px Nunito,sans-serif`;
+        ctx.textAlign='center'; ctx.textBaseline='bottom';
+        ctx.fillText(type==='low' ? '↑ JUMP' : '↓ SLIDE', 0, -h/2+2);
+      }
+    }
     ctx.restore();
   }
 }
 
-function shadeColor(hex, amt) {
-  const num = parseInt(hex.replace('#',''), 16);
-  const r = Math.min(255, Math.max(0, (num >> 16) + amt));
-  const g = Math.min(255, Math.max(0, ((num >> 8) & 0xff) + amt));
-  const b = Math.min(255, Math.max(0, (num & 0xff) + amt));
-  return `rgb(${r},${g},${b})`;
-}
-
-// Particles
-function spawnParticles(x, y) {
-  for (let i = 0; i < 28; i++) {
-    const a = Math.random() * Math.PI * 2;
-    const s = 2 + Math.random() * 6;
+// =============================================
+// PARTICLES
+// =============================================
+function boom(x, y) {
+  const cols = ['#f07d3c','#e05050','#f5c840','#50b0f0','#ffffff','#a0e080'];
+  for (let i = 0; i < 36; i++) {
+    const a = Math.random()*Math.PI*2, s = 1.5 + Math.random()*7.5;
     particles.push({
-      x, y, vx: Math.cos(a)*s, vy: Math.sin(a)*s - 2,
-      life: 1, size: 2 + Math.random() * 4,
-      color: ['#818cf8','#c084fc','#38bdf8','#f472b6','#fb923c'][Math.floor(Math.random()*5)]
+      x, y,
+      vx: Math.cos(a)*s, vy: Math.sin(a)*s-2.5,
+      life:1, sz: 2+Math.random()*5,
+      color: cols[Math.floor(Math.random()*cols.length)],
+      rot: Math.random()*Math.PI*2, rv: (Math.random()-0.5)*0.35,
+      shape: Math.random()>0.5 ? 'sq' : 'ci'
     });
   }
 }
 
-// Background
-let gridY = 0;
-function drawBackground(spd, dt) {
-  // Sky
-  ctx.fillStyle = '#07070e';
-  ctx.fillRect(0, 0, W, H);
-
-  // Road
-  const rg = ctx.createLinearGradient(0, 0, 0, H);
-  rg.addColorStop(0, '#0e0e22');
-  rg.addColorStop(1, '#14143a');
-  ctx.fillStyle = rg;
-  ctx.fillRect(W/2 - 165, 0, 330, H);
-
-  // Moving grid
-  gridY += spd * dt * 60 * 0.4;
-  if (gridY > 60) gridY -= 60;
-  ctx.strokeStyle = 'rgba(129,140,248,0.07)';
-  ctx.lineWidth = 1;
-  for (let y = -60 + gridY; y < H + 60; y += 60) {
-    ctx.beginPath(); ctx.moveTo(W/2-165, y); ctx.lineTo(W/2+165, y); ctx.stroke();
-  }
-  for (let x = W/2-165; x <= W/2+165; x += 55) {
-    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-  }
-
-  // Lane dashes
-  ctx.strokeStyle = 'rgba(129,140,248,0.18)';
-  ctx.lineWidth = 2;
-  ctx.setLineDash([28, 18]);
-  ctx.lineDashOffset = -gridY * 1.5;
-  [W/2 - 55, W/2 + 55].forEach(lx => {
-    ctx.beginPath(); ctx.moveTo(lx, 0); ctx.lineTo(lx, H); ctx.stroke();
+function drawParticles(dt) {
+  ctx.save();
+  particles = particles.filter(p=>p.life>0);
+  particles.forEach(p => {
+    p.x += p.vx*dt*60; p.y += p.vy*dt*60;
+    p.vy += 0.24*dt*60;
+    p.life -= 0.022*dt*60;
+    p.rot += p.rv*dt*60;
+    ctx.globalAlpha = Math.max(0, p.life * p.life);
+    ctx.fillStyle = p.color;
+    ctx.save();
+    ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+    if (p.shape==='sq') ctx.fillRect(-p.sz/2,-p.sz/2,p.sz,p.sz);
+    else { ctx.beginPath(); ctx.arc(0,0,p.sz/2,0,Math.PI*2); ctx.fill(); }
+    ctx.restore();
   });
-  ctx.setLineDash([]); ctx.lineDashOffset = 0;
-
-  // Road edge glows
-  const lg = ctx.createLinearGradient(W/2-165, 0, W/2-125, 0);
-  lg.addColorStop(0, 'rgba(99,102,241,0.35)'); lg.addColorStop(1, 'transparent');
-  ctx.fillStyle = lg; ctx.fillRect(W/2-165, 0, 40, H);
-  const rg2 = ctx.createLinearGradient(W/2+125, 0, W/2+165, 0);
-  rg2.addColorStop(0, 'transparent'); rg2.addColorStop(1, 'rgba(99,102,241,0.35)');
-  ctx.fillStyle = rg2; ctx.fillRect(W/2+125, 0, 40, H);
+  ctx.restore();
 }
 
-// Collision
-function rectsOverlap(a, b) {
+function addFloat(x, y, txt, color) {
+  floatTexts.push({x, y, txt, color, life:1});
+}
+
+function drawFloats(dt) {
+  ctx.save();
+  floatTexts = floatTexts.filter(f=>f.life>0);
+  floatTexts.forEach(f => {
+    f.y -= 38*dt;
+    f.life -= dt*1.8;
+    ctx.globalAlpha = Math.max(0, f.life);
+    ctx.fillStyle = f.color;
+    ctx.font = "bold 18px 'Bebas Neue',sans-serif";
+    ctx.textAlign='center';
+    ctx.fillText(f.txt, f.x, f.y);
+  });
+  ctx.restore();
+}
+
+// =============================================
+// COLLISION
+// =============================================
+function hits(a, b) {
   return a.x < b.x+b.w && a.x+a.w > b.x && a.y < b.y+b.h && a.y+a.h > b.y;
 }
 
-// Player
-let player = new Player();
+// =============================================
+// PLAYER INSTANCE
+// =============================================
+const player = new Player();
 
-// Input
-const pressed = {};
+// =============================================
+// INPUT
+// =============================================
+const held = {};
 document.addEventListener('keydown', e => {
-  if (pressed[e.code]) return;
-  pressed[e.code] = true;
-  if (state !== 'game') return;
-  if (e.code === 'ArrowLeft'  || e.code === 'KeyA') player.moveLeft();
-  if (e.code === 'ArrowRight' || e.code === 'KeyD') player.moveRight();
-  if (e.code === 'ArrowUp'    || e.code === 'KeyW') player.jump();
-  if (e.code === 'ArrowDown'  || e.code === 'KeyS') player.slide();
-  if (e.code === 'Escape') togglePause();
+  if (held[e.code]) return; held[e.code]=true;
+  if (state!=='game') return;
+  if (e.code==='ArrowLeft'||e.code==='KeyA') player.moveLeft();
+  if (e.code==='ArrowRight'||e.code==='KeyD') player.moveRight();
+  if (e.code==='ArrowUp'||e.code==='KeyW') player.jump();
+  if (e.code==='ArrowDown'||e.code==='KeyS') player.slide();
+  if (e.code==='Escape') togglePause();
 });
-document.addEventListener('keyup', e => { pressed[e.code] = false; });
+document.addEventListener('keyup', e => { held[e.code]=false; });
 
-let touchStart = null;
-canvas.addEventListener('touchstart', e => {
-  touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-}, { passive: true });
+let tch0 = null;
+canvas.addEventListener('touchstart', e => { tch0={x:e.touches[0].clientX, y:e.touches[0].clientY}; }, {passive:true});
 canvas.addEventListener('touchend', e => {
-  if (!touchStart || state !== 'game') return;
-  const dx = e.changedTouches[0].clientX - touchStart.x;
-  const dy = e.changedTouches[0].clientY - touchStart.y;
-  if (Math.abs(dx) > Math.abs(dy)) {
-    if (dx > 25) player.moveRight(); else if (dx < -25) player.moveLeft();
-  } else {
-    if (dy < -25) player.jump(); else if (dy > 25) player.slide();
-  }
-  touchStart = null;
-}, { passive: true });
+  if (!tch0||state!=='game') return;
+  const dx = e.changedTouches[0].clientX-tch0.x;
+  const dy = e.changedTouches[0].clientY-tch0.y;
+  if (Math.abs(dx)>Math.abs(dy)) { dx>22 ? player.moveRight() : player.moveLeft(); }
+  else { dy<-22 ? player.jump() : player.slide(); }
+  tch0=null;
+}, {passive:true});
 
-// Buttons
+// =============================================
+// UI HELPERS
+// =============================================
+function showUI(s) {
+  document.getElementById('startScreen').classList.toggle('show', s==='start');
+  document.getElementById('pauseOverlay').classList.toggle('show', s==='pause');
+  document.getElementById('overOverlay').classList.toggle('show', s==='over');
+  document.getElementById('hud').classList.toggle('show', s==='game'||s==='dying');
+}
+
 document.getElementById('playBtn').onclick = startGame;
+document.getElementById('pauseBtn').onclick = togglePause;
 document.getElementById('resumeBtn').onclick = togglePause;
 document.getElementById('restartFromPause').onclick = startGame;
 document.getElementById('restartBtn').onclick = startGame;
-document.getElementById('pauseBtn').onclick = togglePause;
+document.getElementById('menuBtn').onclick = () => { state='start'; showUI('start'); };
+document.getElementById('openCust').onclick = () => document.getElementById('custOverlay').classList.add('show');
+document.getElementById('closeCust').onclick = () => document.getElementById('custOverlay').classList.remove('show');
 
 function startGame() {
-  player.reset();
-  obstacles = []; particles = [];
-  score = 0; speed = 4; gameTime = 0; spawnTimer = 0; gridY = 0;
-  state = 'game';
-  showScreen('game');
+  player.init();
+  obstacles=[]; particles=[]; floatTexts=[];
+  score=0; speed=3.8; gameTime=0; spawnTimer=0; dashOff=0; lastSpeedLv=0;
+  state='game';
+  showUI('game');
   updateHUD();
 }
 
 function togglePause() {
-  if (state === 'game') { state = 'pause'; showScreen('pause'); }
-  else if (state === 'pause') { state = 'game'; showScreen('game'); }
+  if (state==='game')  { state='pause'; showUI('pause'); }
+  else if (state==='pause') { state='game'; showUI('game'); }
 }
 
-function triggerGameOver() {
+let deathTO = null;
+function die() {
   if (player.dead) return;
-  player.dead = true;
-  spawnParticles(player.x, player.y + player.h / 2);
-  state = 'dying';
-  if (score > hiScore) {
-    hiScore = score;
-    localStorage.setItem('neonrun_hi', hiScore);
-  }
+  player.dead=true;
+  state='dying';
+  boom(player.x, player.y + player.h/2);
+  if (score > hiScore) { hiScore=score; localStorage.setItem('sd_hi', hiScore); }
   document.getElementById('finalScore').textContent = score;
-  document.getElementById('finalHi').textContent = hiScore;
-  setTimeout(() => { state = 'over'; showScreen('over'); }, 900);
+  document.getElementById('finalBest').textContent = hiScore;
+  clearTimeout(deathTO);
+  deathTO = setTimeout(() => { state='over'; showUI('over'); }, 1050);
 }
 
 function updateHUD() {
-  document.getElementById('scoreDisplay').textContent = score;
-  document.getElementById('hiDisplay').textContent = hiScore;
+  document.getElementById('scoreVal').textContent = score;
+  document.getElementById('bestVal').textContent = hiScore;
 }
 
-// Main loop
-let lastTime = 0;
+// =============================================
+// CUSTOMIZATION HANDLERS
+// =============================================
+// Player photo
+document.getElementById('playerZone').onclick = () => document.getElementById('playerFile').click();
+document.getElementById('playerFile').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const url = URL.createObjectURL(f);
+  const img = new Image();
+  img.onload = () => { playerImg = img; };
+  img.src = url;
+  const prev = document.getElementById('playerPrev');
+  prev.src = url; prev.classList.add('show');
+  document.getElementById('upIco').style.display='none';
+  document.getElementById('upTxt').textContent = 'Character ready! ✓';
+  // Update start screen character
+  document.getElementById('startChar').textContent = '';
+  const sc = document.getElementById('startChar');
+  const simg = document.createElement('img');
+  simg.src = url;
+  simg.style.cssText = 'width:40px;height:40px;border-radius:50%;border:3px solid #fff;object-fit:cover;';
+  sc.appendChild(simg);
+};
+
+// Emoji grid
+document.getElementById('emojiGrid').addEventListener('click', e => {
+  const opt = e.target.closest('.eg-opt'); if (!opt) return;
+  document.querySelectorAll('.eg-opt').forEach(o => o.classList.remove('on'));
+  opt.classList.add('on');
+  obsEmoji = opt.dataset.e;
+  obsImg = null;
+  document.getElementById('obsPrev').classList.remove('show');
+  document.getElementById('obsLbl').textContent = '📁 Or upload an obstacle image';
+  refreshEmoji();
+});
+
+document.getElementById('addEmoBtn').onclick = () => {
+  const v = document.getElementById('custEmoIn').value.trim();
+  if (!v) return;
+  obsEmoji = v; obsImg = null;
+  document.querySelectorAll('.eg-opt').forEach(o => o.classList.remove('on'));
+  document.getElementById('custEmoIn').value = '';
+  refreshEmoji();
+};
+
+// Obstacle image
+document.getElementById('obsZone').onclick = () => document.getElementById('obsFile').click();
+document.getElementById('obsFile').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const url = URL.createObjectURL(f);
+  const img = new Image();
+  img.onload = () => { obsImg = img; };
+  img.src = url;
+  const prev = document.getElementById('obsPrev');
+  prev.src = url; prev.classList.add('show');
+  document.getElementById('obsLbl').textContent = 'Obstacle loaded! ✓';
+  document.querySelectorAll('.eg-opt').forEach(o => o.classList.remove('on'));
+  emojiCanvas = null;
+};
+
+// =============================================
+// MAIN LOOP
+// =============================================
+let lastScoreMilestone = 0;
 function loop(ts) {
-  const dt = Math.min((ts - lastTime) / 1000, 0.05);
-  lastTime = ts;
+  const dt = Math.min((ts-lastTs)/1000, 0.05);
+  lastTs = ts;
 
-  drawBackground(speed, dt);
+  drawBG(dt);
 
-  if (state === 'game' || state === 'dying') {
-    if (state === 'game') {
+  if (state==='game' || state==='dying') {
+    if (state==='game') {
       gameTime += dt;
-      score = Math.floor(gameTime * 10);
-      speed = 4 + gameTime * 0.15;
+      score = Math.floor(gameTime*12);
+      speed = 3.8 + gameTime*0.13;
+
+      // Speed milestone flash
+      const lv = Math.floor(gameTime/8);
+      if (lv > lastSpeedLv) {
+        lastSpeedLv = lv;
+        addFloat(CW/2, CH/2-20, `SPEED UP!`, '#f07d3c');
+        const fl = document.getElementById('spFlash');
+        fl.style.opacity='1'; setTimeout(()=>fl.style.opacity='0', 280);
+      }
+
+      // Score milestone floats
+      const ms = Math.floor(score/100)*100;
+      if (ms > 0 && ms !== lastScoreMilestone && score % 100 < 14) {
+        lastScoreMilestone = ms;
+        addFloat(CW/2, CH*0.4, `+100!`, '#3cb0f0');
+      }
+
       updateHUD();
 
       // Spawn
-      spawnTimer -= dt * 60;
+      spawnTimer -= dt*60;
       if (spawnTimer <= 0) {
-        // Spawn 1-2 obstacles in different lanes
-        const lane = Math.floor(Math.random() * 3);
-        const types = ['normal', 'low', 'high'];
-        const type = types[Math.floor(Math.random() * types.length)];
-        obstacles.push(new Obstacle(lane, type));
-        // Occasionally spawn second in another lane
-        if (Math.random() < 0.3 && gameTime > 5) {
-          let lane2 = Math.floor(Math.random() * 3);
-          if (lane2 === lane) lane2 = (lane2 + 1) % 3;
-          obstacles.push(new Obstacle(lane2, types[Math.floor(Math.random() * types.length)]));
+        const lane = Math.floor(Math.random()*3);
+        const pool = gameTime < 5 ? ['normal','normal','low'] : ['normal','low','high'];
+        obstacles.push(new Obstacle(lane, pool[Math.floor(Math.random()*pool.length)]));
+        if (Math.random() < 0.3 && gameTime > 6) {
+          const l2 = (lane + 1 + Math.floor(Math.random()*2)) % 3;
+          obstacles.push(new Obstacle(l2, pool[Math.floor(Math.random()*pool.length)]));
         }
-        spawnTimer = Math.max(38, 95 - gameTime * 1.4);
+        spawnTimer = Math.max(38, 98 - gameTime*1.5);
       }
     }
 
-    obstacles = obstacles.filter(o => o.y < H + 120);
+    obstacles = obstacles.filter(o=>o.y < CH+110);
     obstacles.forEach(o => {
-      if (state === 'game') o.update(speed, dt);
+      if (state==='game') o.update(speed, dt);
       o.draw();
-      if (state === 'game' && !player.dead && rectsOverlap(player.hitbox, o.hitbox)) {
-        triggerGameOver();
-      }
+      if (state==='game' && !player.dead && hits(player.hb, o.hb)) die();
     });
 
     player.update(dt);
     player.draw();
   }
 
-  // Particles
-  ctx.save();
-  particles = particles.filter(p => p.life > 0);
-  particles.forEach(p => {
-    p.x += p.vx * dt * 60;
-    p.y += p.vy * dt * 60;
-    p.vy += 0.18 * dt * 60;
-    p.life -= 0.022 * dt * 60;
-    ctx.globalAlpha = Math.max(0, p.life);
-    ctx.fillStyle = p.color;
-    ctx.shadowColor = p.color;
-    ctx.shadowBlur = 10;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-    ctx.fill();
-  });
-  ctx.restore();
-
+  drawParticles(dt);
+  drawFloats(dt);
   requestAnimationFrame(loop);
 }
 
-// Init
-hiScore = parseInt(localStorage.getItem('neonrun_hi') || '0');
-document.getElementById('hiDisplay').textContent = hiScore;
-showScreen('start');
+// =============================================
+// INIT
+// =============================================
+hiScore = parseInt(localStorage.getItem('sd_hi')||'0');
+document.getElementById('bestVal').textContent = hiScore;
+showUI('start');
 requestAnimationFrame(loop);
 </script>
 </body>
